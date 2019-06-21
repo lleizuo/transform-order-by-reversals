@@ -1,4 +1,0 @@
-Jun 17
-
-Preparing to write the python program. Input is a list of integers. After setting the cnf, use python subprocess library to send the cnf to SAT-solver(lingeling). To find the minimum step that achieves maximum NOP, we use binary search. Constructing the cnf now. There is a bit difference between the variables prof showed me and those in the book. I will follow the book.
-
