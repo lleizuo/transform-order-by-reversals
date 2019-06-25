@@ -1,5 +1,6 @@
 import sys
 import subprocess
+import itertools
 
 def skeleton():
     # input parsing for only P2 now
@@ -16,9 +17,9 @@ def skeleton():
     cnf_file = open(cnf_path,'x')
     cnf_file.close()
     num_of_lines = 0
-    num_of_lines += f1(dest_list,cnf_path)
-    num_of_lines += f2(dest_list,cnf_path)
-    num_of_lines += f3(dest_list,cnf_path)
+    # num_of_lines += f1(dest_list,cnf_path)
+    # num_of_lines += f2(dest_list,cnf_path)
+    # num_of_lines += f3(dest_list,cnf_path)
     header(dest_list,cnf_path,num_of_lines)
     #subprocess.run(["../sat-solver/lingeling","temp.cnf"])
     #subprocess.run(["rm","temp.cnf"])
@@ -59,36 +60,69 @@ def nop_index(k,n):
 def f1(dest_list,cnf_path):
     n = len(dest_list)
     cnf_file = open(cnf_path,'a')
-    cnf_file.write("f1_line\n")
+    #cnf_file.write("f1_line\n")
     clause_count = 0
-
     for k in range(1,n):
         var_list = []
-
-    cnf_file.write("\n")
-    cnf_file.write("\n")
+        var_list.append(nop_index(k,n))
+        for p in range(1,n):
+            for q in range(p+1,n+1):
+                var_list.append(r_index(p,q,k,n))
+        # all items in the first line
+        for elem in var_list:
+            cnf_file.write(str(elem)+" ")
+        cnf_file.write("0\n")
+        clause_count += 1
+        # all pairs of neg elem
+        for pair in itertools.combinations(var_list,2):
+            cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+            clause_count += 1
     cnf_file.close()
-    return 4
+    return clause_count
 
 
 def f2(dest_list,cnf_path):
     n = len(dest_list)
     cnf_file = open(cnf_path,'a')
-    cnf_file.write("f2_line\n")
+    #cnf_file.write("f2_line\n")
     clause_count = 0
-
+    for i in range(1,n+1):
+        var_list = []
+        for q in range(1,n+1):
+            var_list.append(x_index(1,i,i,q,n))
+        # all items in the first line
+        for elem in var_list:
+            cnf_file.write(str(elem)+" ")
+        cnf_file.write("0\n")
+        clause_count += 1
+        # all pairs of neg elem
+        for pair in itertools.combinations(var_list,2):
+            cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+            clause_count += 1
     cnf_file.close()
-    return 200
+    return clause_count
 
 
 def f3(dest_list,cnf_path):
     n = len(dest_list)
     cnf_file = open(cnf_path,'a')
-    cnf_file.write("f3_line\n")
+    #cnf_file.write("f3_line\n")
     clause_count = 0
-    
+    for i in range(1,n+1):
+        var_list = []
+        for p in range(1,n+1):
+            var_list.append(x_index(n-1,i,p,dest_list.index(i)+1,n))
+        # all items in the first line
+        for elem in var_list:
+            cnf_file.write(str(elem)+" ")
+        cnf_file.write("0\n")
+        clause_count += 1
+        # all pairs of neg elem
+        for pair in itertools.combinations(var_list,2):
+            cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+            clause_count += 1
     cnf_file.close()
-    return 58
+    return clause_count
 
 
 skeleton()
