@@ -24,16 +24,16 @@ def skeleton():
     #subprocess.run(["rm","temp.cnf"])
 
 
-def header(dest_list,cnf_path,num_of_lines):
+def header(dest_list,cnf_path,num_of_clauses):
     n = len(dest_list)
     num_of_vars = 0
     # X[k : 1 to n-1][i : 1 to n][p : 1 to n][q : 1 to n]
-
+    num_of_vars += pow(n,4)-pow(n,3)
     # R[p : 1 to n][q : 1 to n][k : 1 to n-1]
-
+    num_of_vars += pow(n,3)-pow(n,2)
     # NOP : 1 to n-1
     num_of_vars += n - 1
-    line_prepender(cnf_path,"it's head!!")
+    line_prepender(cnf_path,"p cnf "+str(num_of_vars)+" "+str(num_of_clauses))
 
 
 def line_prepender(cnf_path, line):
@@ -44,23 +44,49 @@ def line_prepender(cnf_path, line):
         f.write(line.rstrip('\r\n') + '\n' + content)
 
 
+def x_index(k,i,p,q,n):
+    return (k-1)*pow(n,3) + (i-1)*pow(n,2) + (p-1)*n + q
+
+
+def r_index(p,q,k,n):
+    return (p-1)*(n*n-n) + (q-1)*(n-1) + k + pow(n,4)-pow(n,3)
+
+
+def nop_index(k,n):
+    return pow(n,4)-pow(n,2) + k
+
+
 def f1(dest_list,cnf_path):
+    n = len(dest_list)
     cnf_file = open(cnf_path,'a')
-    cnf_file.write("202\n")
+    cnf_file.write("f1_line\n")
+    clause_count = 0
+
+    for k in range(1,n):
+        var_list = []
+
+    cnf_file.write("\n")
+    cnf_file.write("\n")
     cnf_file.close()
     return 4
 
 
 def f2(dest_list,cnf_path):
+    n = len(dest_list)
     cnf_file = open(cnf_path,'a')
-    cnf_file.write("202\n")
+    cnf_file.write("f2_line\n")
+    clause_count = 0
+
     cnf_file.close()
     return 200
 
 
 def f3(dest_list,cnf_path):
+    n = len(dest_list)
     cnf_file = open(cnf_path,'a')
-    cnf_file.write("202\n")
+    cnf_file.write("f3_line\n")
+    clause_count = 0
+    
     cnf_file.close()
     return 58
 
