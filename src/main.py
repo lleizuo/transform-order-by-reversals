@@ -22,8 +22,8 @@ def skeleton():
     # num_of_lines += f3(dest_list,cnf_path)
     # num_of_lines += f4(dest_list,cnf_path)
     # num_of_lines += f5(dest_list,cnf_path)
-    num_of_lines += f6(dest_list,cnf_path)
-    num_of_lines += f7(dest_list,cnf_path)
+    # num_of_lines += f6(dest_list,cnf_path)
+    # num_of_lines += f7(dest_list,cnf_path)
     num_of_lines += f8(dest_list,cnf_path)
     # num_of_lines += f9(dest_list,cnf_path)
     header(dest_list,cnf_path,num_of_lines)
@@ -181,11 +181,64 @@ def f5(dest_list,cnf_path):
 
 
 def f6(dest_list,cnf_path):
-    return 0
+    n = len(dest_list)
+    cnf_file = open(cnf_path,'a')
+    #cnf_file.write("f6_line\n")
+    clause_count = 0
+    for k in range(2,n):
+        for i in range(1,n+1):
+            for p in range(1,n+1):
+                var_list_1 = []
+                var_list_2 = []
+                for q in range(1,n+1):
+                    var_list_1.append(x_index(k-1,i,q,p,n))
+                    var_list_2.append(x_index(k,i,p,q,n))
+                # first part
+                first_string = ""
+                for var in var_list_1:
+                    first_string += str(var) + " "
+                for var in var_list_2:
+                    cnf_file.write(first_string+" -"+str(var)+" 0\n")
+                    clause_count += 1
+                # second part
+                second_string = ""
+                for var in var_list_2:
+                    second_string += str(var) + " "
+                for var in var_list_1:
+                    cnf_file.write(second_string+" -"+str(var)+" 0\n")
+                    clause_count += 1
+    cnf_file.close()
+    return clause_count
 
 
 def f7(dest_list,cnf_path):
-    return 0
+    n = len(dest_list)
+    cnf_file = open(cnf_path,'a')
+    #cnf_file.write("f7_line\n")
+    clause_count = 0
+    for k in range(1,n-1):
+        for w in range(1,n+1):
+            var_list_1 = []
+            var_list_2 = []
+            for i in range(1,n+1):
+                var_list_1.append(x_index(k,i,w,w,n))
+            var_list_2.append(nop_index(k,n))
+            for p in range(1,n):
+                for q in range(p+1,n+1):
+                    if 2*w == p + q:
+                        var_list_2.append(r_index(p,q,k,n))
+                    if p < w and q < w:
+                        var_list_2.append(r_index(p,q,k,n))
+                    if p > w and q > w:
+                        var_list_2.append(r_index(p,q,k,n))
+            second_string = ""
+            for var in var_list_2:
+                second_string += str(var) + " "
+            for var in var_list_1:
+                cnf_file.write(second_string+" -"+str(var)+" 0\n")
+                clause_count += 1
+    cnf_file.close()
+    return clause_count
 
 
 def f8(dest_list,cnf_path):
