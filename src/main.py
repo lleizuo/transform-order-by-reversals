@@ -17,19 +17,20 @@ def skeleton():
     cnf_file = open(cnf_path,'x')
     cnf_file.close()
     num_of_lines = 0
-    # num_of_lines += f1(dest_list,cnf_path)
-    # num_of_lines += f2(dest_list,cnf_path)
-    # num_of_lines += f3(dest_list,cnf_path)
-    # num_of_lines += f4(dest_list,cnf_path)
-    # num_of_lines += f5(dest_list,cnf_path)
-    # num_of_lines += f6(dest_list,cnf_path)
-    # num_of_lines += f7(dest_list,cnf_path)
+    num_of_lines += f1(dest_list,cnf_path)
+    num_of_lines += f2(dest_list,cnf_path)
+    num_of_lines += f3(dest_list,cnf_path)
+    num_of_lines += f4(dest_list,cnf_path)
+    num_of_lines += f5(dest_list,cnf_path)
+    num_of_lines += f6(dest_list,cnf_path)
+    num_of_lines += f7(dest_list,cnf_path)
     num_of_lines += f8(dest_list,cnf_path)
-    # num_of_lines += f9(dest_list,cnf_path)
+    num_of_lines += f9(dest_list,cnf_path)
+    num_of_lines += specific_nop(dest_list,cnf_path)
     header(dest_list,cnf_path,num_of_lines)
-    #result = subprocess.run(["../sat_solver/lingeling","temp.cnf"],capture_output=True).stdout
-    #print(result)
-    #subprocess.run(["rm","temp.cnf"])
+    result = subprocess.run(["../sat_solver/lingeling","temp.cnf"],capture_output=True).stdout
+    print(result)
+    subprocess.run(["rm","temp.cnf"])
 
 
 def header(dest_list,cnf_path,num_of_clauses):
@@ -159,7 +160,7 @@ def f4(dest_list,cnf_path):
 def f5(dest_list,cnf_path):
     n = len(dest_list)
     cnf_file = open(cnf_path,'a')
-    cnf_file.write("f5_line\n")
+    #cnf_file.write("f5_line\n")
     clause_count = 0
     for k in range(2,n):
         for p in range(1,n+1):
@@ -242,16 +243,49 @@ def f7(dest_list,cnf_path):
 
 
 def f8(dest_list,cnf_path):
-    return 0
+    n = len(dest_list)
+    cnf_file = open(cnf_path,'a')
+    #cnf_file.write("f8_line\n")
+    clause_count = 0
+    for k in range(1,n-1):
+        for w in range(1,n+1):
+            for z in range(1,n+1):
+                var_list_1 = []
+                var_list_2 = []
+                for i in range(1,n+1):
+                    var_list_1.append(x_index(k,i,w,z,n))
+                a = min(w,z)
+                b = max(w,z)
+                for p in range(1,n):
+                    for q in range(p+1,n+1):
+                        if a-p == q-b and a-p <= min(a-1,n-b):
+                            var_list_2.append(r_index(p,q,k,n))
+                second_string = ""
+                for var in var_list_2:
+                    second_string += str(var) + " "
+                for var in var_list_1:
+                    cnf_file.write(second_string+" -"+str(var)+" 0\n")
+                    clause_count += 1
+    cnf_file.close()
+    return clause_count
 
 
 def f9(dest_list,cnf_path):
     n = len(dest_list)
     cnf_file = open(cnf_path,'a')
-    cnf_file.write("f9_line\n")
+    #cnf_file.write("f9_line\n")
     for k in range(1,n-1):
         cnf_file.write(str(nop_index(k+1,n))+" -"+str(nop_index(k,n))+" 0\n")
+    cnf_file.close()
     return n-2
+
+
+def specific_nop(dest_list,cnf_path):
+    n = len(dest_list)
+    cnf_file = open(cnf_path,'a')
+    cnf_file.write(str(nop_index(1,n))+" 0\n")
+    cnf_file.close()
+    return 1
 
 
 skeleton()
