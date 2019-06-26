@@ -21,11 +21,11 @@ def skeleton():
     # num_of_lines += f2(dest_list,cnf_path)
     # num_of_lines += f3(dest_list,cnf_path)
     # num_of_lines += f4(dest_list,cnf_path)
-    num_of_lines += f5(dest_list,cnf_path)
+    # num_of_lines += f5(dest_list,cnf_path)
     num_of_lines += f6(dest_list,cnf_path)
     num_of_lines += f7(dest_list,cnf_path)
     num_of_lines += f8(dest_list,cnf_path)
-    num_of_lines += f9(dest_list,cnf_path)
+    # num_of_lines += f9(dest_list,cnf_path)
     header(dest_list,cnf_path,num_of_lines)
     #result = subprocess.run(["../sat_solver/lingeling","temp.cnf"],capture_output=True).stdout
     #print(result)
@@ -157,7 +157,27 @@ def f4(dest_list,cnf_path):
 
 
 def f5(dest_list,cnf_path):
-    return 0
+    n = len(dest_list)
+    cnf_file = open(cnf_path,'a')
+    cnf_file.write("f5_line\n")
+    clause_count = 0
+    for k in range(2,n):
+        for p in range(1,n+1):
+            var_list = []
+            for q in range(1,n+1):
+                for i in range(1,n+1):
+                    var_list.append(x_index(k,i,p,q,n))
+            # all items in the first line
+            for elem in var_list:
+                cnf_file.write(str(elem)+" ")
+            cnf_file.write("0\n")
+            clause_count += 1
+            # all pairs of neg elem
+            for pair in itertools.combinations(var_list,2):
+                cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+                clause_count += 1
+    cnf_file.close()
+    return clause_count
 
 
 def f6(dest_list,cnf_path):
@@ -173,7 +193,12 @@ def f8(dest_list,cnf_path):
 
 
 def f9(dest_list,cnf_path):
-    return 0
+    n = len(dest_list)
+    cnf_file = open(cnf_path,'a')
+    cnf_file.write("f9_line\n")
+    for k in range(1,n-1):
+        cnf_file.write(str(nop_index(k,n))+" -"+str(nop_index(k+1,n))+" 0\n")
+    return n-2
 
 
 skeleton()
