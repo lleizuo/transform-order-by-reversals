@@ -197,7 +197,7 @@ def f9(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     cnf_file.write("f9_line\n")
     for k in range(1,n-1):
-        cnf_file.write(str(nop_index(k,n))+" -"+str(nop_index(k+1,n))+" 0\n")
+        cnf_file.write(str(nop_index(k+1,n))+" -"+str(nop_index(k,n))+" 0\n")
     return n-2
 
 
