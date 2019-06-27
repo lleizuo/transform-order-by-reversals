@@ -28,8 +28,10 @@ def skeleton():
     num_of_lines += f9(dest_list,cnf_path)
     num_of_lines += specific_nop(dest_list,cnf_path)
     header(dest_list,cnf_path,num_of_lines)
+    print("CNF file prepared......")
     result = subprocess.run(["../sat_solver/lingeling","temp.cnf"],capture_output=True).stdout
     print(result)
+    subprocess.run(["cat","temp.cnf"])
     subprocess.run(["rm","temp.cnf"])
 
 
