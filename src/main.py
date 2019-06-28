@@ -332,10 +332,19 @@ def k_result_parser(k,dest_list):
     result = subprocess.run(["../sat_solver/lingeling","temp_parsing.cnf"],capture_output=True).stdout
     new_result = result.decode("utf-8")
     sat_index = new_result.find("SATISFIABLE")
+    start_index = new_result[sat_index:].find("v")
     end_index = new_result[sat_index:].find(" 0")
-    print(new_result[sat_index:sat_index+end_index])
-
-
+    r_list = []
+    for num in new_result[sat_index+start_index:sat_index+end_index].split():
+        if not num == 'v':
+            if int(num) > 0:
+                if int(num) > pow(n,3)*(n-1) and int(num) <= pow(n,4) - pow(n,2):
+                    num_we_use = int(num) - pow(n,3)*(n-1)
+                    p = int(num_we_use / (n*(n-1))) + 1
+                    q = int( (num_we_use - (p-1)*n*(n-1)) / (n-1)) + 1
+                    k = num_we_use - (p-1)*n*(n-1) - (q-1)*(n-1)
+                    r_list.append((p,q,k))
+    print(r_list)
     subprocess.run(["rm","temp_parsing.cnf"])
 
 
