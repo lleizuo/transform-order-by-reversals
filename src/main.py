@@ -12,6 +12,7 @@ def skeleton():
         print("Your destination list is not valid.")
         return
     dest_list = [int(i) for i in raw_list]
+    n = len(dest_list)
     # creating the cnf file.
     cnf_path = 'temp.cnf'
     cnf_file = open(cnf_path,'x')
@@ -26,12 +27,14 @@ def skeleton():
     num_of_lines += f7(dest_list,cnf_path)
     num_of_lines += f8(dest_list,cnf_path)
     num_of_lines += f9(dest_list,cnf_path)
-    num_of_lines += specific_nop(dest_list,cnf_path)
-    header(dest_list,cnf_path,num_of_lines)
-    print("CNF file prepared......")
-    result = subprocess.run(["../sat_solver/lingeling","temp.cnf"],capture_output=True).stdout
-    print(result)
-    #subprocess.run(["cat","temp.cnf"])
+    header(dest_list,cnf_path,num_of_lines + 1)
+    if nop_k(1,dest_list,cnf_path):
+        print ("No operation needed (min).")
+    else:
+        if not nop_k(n-1,dest_list,cnf_path):
+            print (str(n-1) + " operations needed (max).")
+        else:
+            print(str(search_k(1,n-1,dest_list,cnf_path)) + " operations needed.")
     subprocess.run(["rm","temp.cnf"])
 
 
@@ -284,11 +287,42 @@ def f9(dest_list,cnf_path):
     return n-2
 
 
-def specific_nop(dest_list,cnf_path):
+def search_k(start,end,dest_list,cnf_path):
+    if end - start == 2:
+        if nop_k(start + 1,dest_list,cnf_path) and nop_k(end,dest_list,cnf_path):
+            return start
+        else:
+            return start + 1
+    if end - start == 1:
+        return start
+    left_one = nop_k(int((start+end)/2),dest_list,cnf_path)
+    right_one = nop_k(int((start+end)/2)+1,dest_list,cnf_path)
+    if left_one == False and right_one == True:
+        return int((start+end)/2)
+    if left_one == False and right_one == False:
+        return search_k(int((start+end)/2)+1,end,dest_list,cnf_path)
+    if left_one == True and right_one == True:
+        return search_k(start,int((start+end)/2),dest_list,cnf_path)
+    print("Should not get here.")
+    return "Nothing"
+
+
+def nop_k(k,dest_list,cnf_path):
+    subprocess.run(["cp","temp.cnf","temp_ongoing.cnf"])
     n = len(dest_list)
-    cnf_file = open(cnf_path,'a')
-    cnf_file.write(str(nop_index(1,n))+" 0\n")
+    cnf_file = open("temp_ongoing.cnf",'a')
+    cnf_file.write(str(nop_index(k,n))+" 0\n")
     cnf_file.close()
+    result = subprocess.run(["../sat_solver/lingeling","temp_ongoing.cnf"],capture_output=True).stdout
+    subprocess.run(["rm","temp_ongoing.cnf"])
+    if b'UNSATISFIABLE' in result:
+        return False
+    else:
+        return True
+
+
+def k_result_parser():
+
     return 1
 
 
