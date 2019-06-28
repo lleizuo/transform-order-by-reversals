@@ -5,8 +5,8 @@ import itertools
 def skeleton():
     # input parsing for only P2 now
     raw_list = sys.argv[1:]
-    if len(raw_list) == 0 or len(raw_list) == 1:
-        print("Please enter a destination list of integers.")
+    if len(raw_list) == 0 or len(raw_list) == 1 or len(raw_list) == 2:
+        print("Please enter a destination list of more than 2 integers.")
         return
     if set([str(i) for i in list(range(1,len(raw_list)+1))]) != set(raw_list):
         print("Your destination list is not valid.")
