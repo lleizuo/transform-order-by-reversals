@@ -31,7 +31,7 @@ def skeleton():
     print("CNF file prepared......")
     result = subprocess.run(["../sat_solver/lingeling","temp.cnf"],capture_output=True).stdout
     print(result)
-    subprocess.run(["cat","temp.cnf"])
+    #subprocess.run(["cat","temp.cnf"])
     subprocess.run(["rm","temp.cnf"])
 
 
@@ -219,7 +219,7 @@ def f7(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f7_line\n")
     clause_count = 0
-    for k in range(1,n-1):
+    for k in range(1,n):
         for w in range(1,n+1):
             var_list_1 = []
             var_list_2 = []
@@ -249,9 +249,11 @@ def f8(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f8_line\n")
     clause_count = 0
-    for k in range(1,n-1):
+    for k in range(1,n):
         for w in range(1,n+1):
             for z in range(1,n+1):
+                if z == w:
+                    continue
                 var_list_1 = []
                 var_list_2 = []
                 for i in range(1,n+1):
