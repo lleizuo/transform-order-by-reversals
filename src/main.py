@@ -34,7 +34,9 @@ def skeleton():
         if not nop_k(n-1,dest_list,cnf_path):
             print (str(n-1) + " operations needed (max).")
         else:
-            print(str(search_k(1,n-1,dest_list,cnf_path)) + " operations needed.")
+            k = search_k(1,n-1,dest_list,cnf_path)
+            print(str(k) + " operations needed.")
+            k_result_parser(k,dest_list)
     subprocess.run(["rm","temp.cnf"])
 
 
@@ -321,9 +323,20 @@ def nop_k(k,dest_list,cnf_path):
         return True
 
 
-def k_result_parser():
+def k_result_parser(k,dest_list):
+    subprocess.run(["cp","temp.cnf","temp_parsing.cnf"])
+    n = len(dest_list)
+    cnf_file = open("temp_parsing.cnf",'a')
+    cnf_file.write(str(nop_index(k+1,n))+" 0\n")
+    cnf_file.close()
+    result = subprocess.run(["../sat_solver/lingeling","temp_parsing.cnf"],capture_output=True).stdout
+    new_result = result.decode("utf-8")
+    sat_index = new_result.find("SATISFIABLE")
+    end_index = new_result[sat_index:].find(" 0")
+    print(new_result[sat_index:sat_index+end_index])
 
-    return 1
+
+    subprocess.run(["rm","temp_parsing.cnf"])
 
 
 skeleton()
