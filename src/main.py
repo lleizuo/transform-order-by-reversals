@@ -27,16 +27,20 @@ def skeleton():
     num_of_lines += f7(dest_list,cnf_path)
     num_of_lines += f8(dest_list,cnf_path)
     num_of_lines += f9(dest_list,cnf_path)
+    print(num_of_lines,end=" ")
     header(dest_list,cnf_path,num_of_lines + 1)
     if nop_k(1,dest_list,cnf_path):
-        print ("No operation needed (min).")
+        #print ("No operation needed (min).")
+        print(0)
     else:
         if not nop_k(n-1,dest_list,cnf_path):
-            print (str(n-1) + " operations needed (max).")
+            #print (str(n-1) + " operations needed (max).")
+            print(n-1)
         else:
             k = search_k(1,n-1,dest_list,cnf_path)
-            print(str(k) + " operations needed.")
-            k_result_parser(k,dest_list)
+            print(k)
+            #print(str(k) + " operations needed.")
+            #k_result_parser(k,dest_list)
     subprocess.run(["rm","temp.cnf"])
 
 
