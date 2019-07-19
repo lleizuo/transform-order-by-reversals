@@ -1,6 +1,7 @@
 import sys
 import subprocess
 import itertools
+import math
 
 def skeleton():
     # input parsing for only P2 now
@@ -13,6 +14,14 @@ def skeleton():
         return
     dest_list = [int(i) for i in raw_list]
     n = len(dest_list)
+    # calculating breakpoints to get bounds
+    breakpoints = 0
+    bp_list = dest_list
+    bp_list = [0] + bp_list
+    bp_list.append(n+1)
+    for i in range(n+1):
+        if abs(bp_list[i+1]-bp_list[i]) != 1:
+            breakpoints += 1
     # creating the cnf file.
     cnf_path = 'temp.cnf'
     cnf_file = open(cnf_path,'x')
@@ -29,18 +38,35 @@ def skeleton():
     num_of_lines += f9(dest_list,cnf_path)
     print(num_of_lines,end=" ")
     header(dest_list,cnf_path,num_of_lines + 1)
-    if nop_k(1,dest_list,cnf_path):
-        #print ("No operation needed (min).")
+    # if nop_k(1,dest_list,cnf_path):
+    #     #print ("No operation needed (min).")
+    #     print(0)
+    # else:
+    #     if not nop_k(n-1,dest_list,cnf_path):
+    #         #print (str(n-1) + " operations needed (max).")
+    #         print(n-1)
+    #     else:
+    #         k = search_k(1,n-1,dest_list,cnf_path)
+    #         print(k)
+    #         #print(str(k) + " operations needed.")
+    #         #k_result_parser(k,dest_list)
+    if breakpoints == 0:
         print(0)
     else:
-        if not nop_k(n-1,dest_list,cnf_path):
-            #print (str(n-1) + " operations needed (max).")
-            print(n-1)
+        if breakpoints == 1:
+            print(1)
         else:
-            k = search_k(1,n-1,dest_list,cnf_path)
-            print(k)
-            #print(str(k) + " operations needed.")
-            #k_result_parser(k,dest_list)
+            if breakpoints == 2:
+                if nop_k(2,dest_list,cnf_path):
+                    print(1)
+                else:
+                    print(2)
+            else:
+                if not nop_k(n-1,dest_list,cnf_path):
+                    print(n-1)
+                else:
+                    k = search_k(math.ceil(breakpoints/2)-1,min(breakpoints,n-1),dest_list,cnf_path)
+                    print(k)
     subprocess.run(["rm","temp.cnf"])
 
 
