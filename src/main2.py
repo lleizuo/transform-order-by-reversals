@@ -2,6 +2,9 @@ import sys
 import subprocess
 import itertools
 import math
+import time
+
+sat_instances = {}
 
 def skeleton():
     # input parsing for only P2 now
@@ -51,23 +54,25 @@ def skeleton():
     #         #print(str(k) + " operations needed.")
     #         #k_result_parser(k,dest_list)
     if breakpoints == 0:
-        print(0)
+        print(0,end=" ")
     else:
         if breakpoints == 1:
-            print(1)
+            print(1,end=" ")
         else:
             if breakpoints == 2:
                 if nop_k(2,dest_list,cnf_path):
-                    print(1)
+                    print(1,end=" ")
                 else:
-                    print(2)
+                    print(2,end=" ")
             else:
                 if not nop_k(n-1,dest_list,cnf_path):
-                    print(n-1)
+                    print(n-1,end=" ")
                 else:
                     k = search_k(math.ceil(breakpoints/2)-1,min(breakpoints,n-1),dest_list,cnf_path)
-                    print(k)
+                    print(k,end=" ")
     subprocess.run(["rm","temp.cnf"])
+    print("dictflag",end=" ")
+    print(sat_instances,end=" ")
 
 
 def header(dest_list,cnf_path,num_of_clauses):
@@ -340,16 +345,23 @@ def search_k(start,end,dest_list,cnf_path):
 
 
 def nop_k(k,dest_list,cnf_path):
+    if k in sat_instances:
+        #print("Duplicate.")
+        return sat_instances[k][0]
     subprocess.run(["cp","temp.cnf","temp_ongoing.cnf"])
     n = len(dest_list)
     cnf_file = open("temp_ongoing.cnf",'a')
     cnf_file.write(str(nop_index(k,n))+" 0\n")
     cnf_file.close()
+    start_time = time.time()
     result = subprocess.run(["../sat_solver/lingeling","temp_ongoing.cnf"],capture_output=True).stdout
+    end_time = time.time()
     subprocess.run(["rm","temp_ongoing.cnf"])
     if b'UNSATISFIABLE' in result:
+        sat_instances[k] = (False,end_time-start_time)
         return False
     else:
+        sat_instances[k] = (True,end_time-start_time)
         return True
 
 
