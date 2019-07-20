@@ -23,7 +23,7 @@ def skeleton():
     #perm = [ list(j) for j in list(itertools.permutations([str(i) for i in range(1,n+1)]))]
     rand_select = []
     order_list = [str(i) for i in range(1,n+1)]
-    for i in range(0,100):
+    for i in range(0,5):
         rand_select.append(random.sample(order_list,len(order_list)))
     #print(rand_select)
     data_list = []
