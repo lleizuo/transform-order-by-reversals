@@ -278,7 +278,7 @@ def f7(dest_list,cnf_path):
             for var in var_list_2:
                 second_string += str(var) + " "
             for var in var_list_1:
-                cnf_file.write(second_string+" -"+str(var)+" 0\n")
+                cnf_file.write(second_string+"-"+str(var)+" 0\n")
                 clause_count += 1
     cnf_file.close()
     return clause_count
@@ -308,7 +308,7 @@ def f8(dest_list,cnf_path):
                 for var in var_list_2:
                     second_string += str(var) + " "
                 for var in var_list_1:
-                    cnf_file.write(second_string+" -"+str(var)+" 0\n")
+                    cnf_file.write(second_string+"-"+str(var)+" 0\n")
                     clause_count += 1
     cnf_file.close()
     return clause_count
