@@ -300,10 +300,14 @@ def f8(dest_list,cnf_path):
                     var_list_1.append(x_index(k,i,w,z,n))
                 a = min(w,z)
                 b = max(w,z)
-                for p in range(1,n):
-                    for q in range(p+1,n+1):
-                        if a-p == q-b and a-p <= min(a-1,n-b):
-                            var_list_2.append(r_index(p,q,k,n))
+                c = min(a-1,n-b)
+                for d in range(0,c+1):
+                    if a - d != b + d:
+                        var_list_2.append(r_index(a-d,b+d,k,n))
+                # for p in range(1,n):
+                #     for q in range(p+1,n+1):
+                #         if a-p == q-b and a-p <= min(a-1,n-b):
+                #             var_list_2.append(r_index(p,q,k,n))
                 second_string = ""
                 for var in var_list_2:
                     second_string += str(var) + " "

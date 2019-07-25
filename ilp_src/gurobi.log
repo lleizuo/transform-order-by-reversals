@@ -1,0 +1,61 @@
+
+Gurobi 8.1.1 (mac64) logging started Thu Jul 25 03:13:26 2019
+
+Academic license - for non-commercial use only
+
+Gurobi Optimizer version 8.1.1 build v8.1.1rc0 (mac64)
+Copyright (c) 2019, Gurobi Optimization, LLC
+
+Read LP format model from file Rlistfile.lp
+Reading time = 0.01 seconds
+: 615 rows, 2191 columns, 9083 nonzeros
+Optimize a model with 615 rows, 2191 columns and 9083 nonzeros
+Variable types: 1 continuous, 2190 integer (2190 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 3e+00]
+Presolve removed 15 rows and 588 columns
+Presolve time: 0.03s
+Presolved: 600 rows, 1603 columns, 6904 nonzeros
+Variable types: 0 continuous, 1603 integer (1602 binary)
+
+Root relaxation: objective 3.000000e+00, 1476 iterations, 0.08 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    3.00000    0   34          -    3.00000      -     -    0s
+H    0     0                       6.0000000    3.00000  50.0%     -    0s
+     0     0    3.00000    0  113    6.00000    3.00000  50.0%     -    0s
+     0     0    3.00000    0   34    6.00000    3.00000  50.0%     -    0s
+     0     0    3.00000    0   48    6.00000    3.00000  50.0%     -    1s
+     0     0    3.00000    0  135    6.00000    3.00000  50.0%     -    1s
+H    0     0                       5.0000000    3.00000  40.0%     -    1s
+     0     0    3.00000    0  112    5.00000    3.00000  40.0%     -    1s
+     0     0    3.00000    0   29    5.00000    3.00000  40.0%     -    1s
+     0     0    3.00000    0   48    5.00000    3.00000  40.0%     -    1s
+     0     0    3.00000    0  161    5.00000    3.00000  40.0%     -    1s
+     0     0    3.00000    0  155    5.00000    3.00000  40.0%     -    1s
+     0     0    3.00000    0   41    5.00000    3.00000  40.0%     -    1s
+     0     0    3.00000    0   72    5.00000    3.00000  40.0%     -    1s
+     0     0    3.00000    0   31    5.00000    3.00000  40.0%     -    1s
+H    0     0                       4.0000000    3.00000  25.0%     -    1s
+     0     0    3.00000    0   95    4.00000    3.00000  25.0%     -    1s
+     0     0    3.00000    0   53    4.00000    3.00000  25.0%     -    1s
+
+Cutting planes:
+  Clique: 39
+  Zero half: 6
+
+Explored 1 nodes (24282 simplex iterations) in 1.97 seconds
+Thread count was 4 (of 4 available processors)
+
+Solution count 3: 4 5 6 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 4.000000000000e+00, best bound 4.000000000000e+00, gap 0.0000%
+
+Wrote result file 'problem.sol'
+
