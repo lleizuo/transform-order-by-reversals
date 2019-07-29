@@ -32,19 +32,21 @@ def skeleton():
 	for i in range(n+1):
 		if abs(bp_list[i+1]-bp_list[i]) != 1:
 			breakpoints += 1
+	# calculating the bounds
+	lower_bound = int((breakpoints/2) + 0.6)
+	upper_bound = breakpoints + n
 	# creating the cnf file
 	cnf_path = 'temp_signed.cnf'
 	cnf_file = open(cnf_path,'x')
 	cnf_file.close()
 	num_of_lines = 0
-	num_of_lines += f1(cnf_path,n)
+	num_of_lines += f1(cnf_path,n,upper_bound)
 	# ......
-	header(cnf_path,num_of_lines + 1)
+	header(cnf_path,num_of_lines+1,n)
 	subprocess.run(["rm","temp_signed.cnf"])
 
 
-def header(cnf_path,num_of_clauses):
-    n = len(dest_list)
+def header(cnf_path,num_of_clauses,n):
     num_of_vars = 0
     # X[k : 1 to n-1][i : 1 to n][p : 1 to n][q : 1 to n]
     num_of_vars += pow(n,4)-pow(n,3)
@@ -81,10 +83,10 @@ def s_index(l,i,n):
 	return (l-1)*n + i + (pow(n,4) - pow(n,2) + n - 1) 
 
 
-def f1(cnf_path,n):
+def f1(cnf_path,n,upper_bound):
 	cnf_file = open(cnf_path,'a')
 	clause_count = 0
-	for k in range(1,n):
+	for k in range(1,upper_bound+1):
 		var_list = []
 		var_list.append(nop_index(k,n))
 		for p in range(1,n):
@@ -125,7 +127,7 @@ def f3(perm_list,cnf_path,n):
 	for i in range(1,n+1):
 		var_list = []
 		for p in range(1,n+1):
-			var_list.append(x_index(2n-1,i,p,perm_list.index(i)+1),n)
+			var_list.append(x_index(2*n-1,i,p,perm_list.index(i)+1),n)
 		for elem in var_list:
 			cnf_file.write(str(elem)+" ")
 		cnf_file.write("0\n")
@@ -137,9 +139,135 @@ def f3(perm_list,cnf_path,n):
 	return clause_count
 
 
-def f4(cnf_path,n):
-	return 
+def f4(cnf_path,n,upper_bound):
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for k in range(2,upper_bound+1):
+		for q in range(1,n+1):
+			var_list = []
+			for p in range(1,n+1):
+				for i in range(1,n+1):
+					var_list.append(x_index(k-1,i,p,q,n))
+			for elem in var_list:
+				cnf_file.write(str(elem)+" ")
+			cnf_file.write("0\n")
+			clause_count +=1
+			for pair in itertools.combinations(var_list,2):
+				cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+				clause_count += 1
+	cnf_file.close()
+	return clause_count
 
+
+def f5(cnf_path,n,upper_bound):
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for k in range(2,upper_bound+1):
+		for p in range(1,n+1):
+			var_list = []
+			for q in range(1,n+1):
+				for i in range(1,n+1):
+					var_list.append(x_index(k,i,p,q,n))
+			for elem in var_list:
+				cnf_file.write(str(elem)+" ")
+			cnf_file.write("0\n")
+			clause_count += 1
+			for pair in itertools.combinations(var_list,2):
+				cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+				clause_count += 1
+	cnf_file.close()
+	return clause_count
+
+
+def f6(cnf_path,n,upper_bound):
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for k in range(2,upper_bound+1):
+		for i in range(1,n+1):
+			for p in range(1,n+1):
+				var_list_1 = []
+				var_list_2 = []
+				for q in range(1,n+1):
+					var_list_1.append(x_index(k-1,i,q,p,n))
+					var_list_2.append(x_index(k,i,p,q,n))
+				first_string = ""
+				for var in var_list_1:
+					first_string += str(var) + " "
+				for var in var_list_2:
+					cnf_file.write(first_string+" -"+str(var)+" 0\n")
+					clause_count += 1
+				second_string = ""
+				for var in var_list_2:
+					second_string += str(var) + " "
+				for var in var_list_1:
+					cnf_file.write(second_string+" -"+str(var)+" 0\n")
+					clause_count += 1
+	cnf_file.close()
+	return clause_count
+
+
+def f7(cnf_path,n,upper_bound):
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for k in range(1,upper_bound+1):
+		for w in range(1,n+1):
+			var_list_1 = []
+			var_list_2 = []
+			for i in range(1,n+1):
+				var_list_1.append(x_index(k,i,w,w,n))
+			var_list_2.append(nop_index(k,n))
+			for p in range(1,n):
+				for q in range(p,n+1):
+					if 2 * w == p + q:
+						var_list_2.append(r_index(p,q,k,n))
+					if p < w and q < w:
+						var_list_2.append(r_index(p,q,k,n))
+					if p > w and q > w:
+						var_list_2.append(r_index(p,q,k,n))
+			second_string = ""
+			for var in var_list_2:
+				second_string += str(var) + " "
+			for var in var_list_1:
+				cnf_file.write(second_string+"-"+str(var)+" 0\n")
+				clause_count += 1
+	cnf_file.close()
+	return clause_count
+
+
+def f8(cnf_path,n,upper_bound):
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for k in range(1,upper_bound+1):
+		for w in range(1,n+1):
+			for z in range(1,n+1):
+				if z == w:
+					continue
+				var_list_1 = []
+				var_list_2 = []
+				for i in range(1,n+1):
+					var_list_1.append(x_index(k,i,w,z,n))
+				a = min(w,z)
+				b = max(w,z)
+				c = min(a-1,n-b)
+				for d in range(0,c+1):
+					if a - d != b + d:
+						var_list_2.append(r_index(a-d,b+d,k,n))
+				second_string = ""
+				for var in var_list_2:
+					second_string += str(var) + " "
+				for var in var_list_1:
+					cnf_file.write(second_string+"-"+str(var)+" 0\n")
+					clause_count += 1
+	cnf_file.close()
+	return clause_count
+
+
+def f9(cnf_path,n,upper_bound):
+	cnf_file = open(cnf_path,'a')
+	for k in range(1,upper_bound):
+		cnf_file.write(str(nop_index(k+1,n))+" -"+str(nop_index(k,n))+" 0\n")
+	cnf_file.close()
+	return upper_bound - 1
 
 
 skeleton()
