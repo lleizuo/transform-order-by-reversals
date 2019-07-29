@@ -33,9 +33,11 @@ def skeleton():
         end_time = time.time()
         decode_result = result.decode("utf-8")
         flagpos = decode_result.find("dictflag")
+        flagpos2 = decode_result.find("operflag")
         parse_result = [int(num) for num in decode_result[:flagpos].split()]
-        detaildict = ast.literal_eval(decode_result[flagpos+9:])
-        data_list.append({'list':work_list,'elapsed_time':end_time-start_time,'num_of_clauses':parse_result[0],'num_of_operations':parse_result[1],"details":detaildict})
+        detaildict = ast.literal_eval(decode_result[flagpos+9:flagpos2])
+        detailoper = ast.literal_eval(decode_result[flagpos2+9:])
+        data_list.append({'list':work_list,'elapsed_time':end_time-start_time,'num_of_clauses':parse_result[0],'num_of_operations':parse_result[1],"details":detaildict,"operations":detailoper})
     pd.DataFrame(data_list).to_csv("../data2/"+str(n)+".csv")
 
 

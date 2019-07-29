@@ -65,11 +65,13 @@ def skeleton():
                     print(1,end=" ")
                 else:
                     print(2,end=" ")
+                    nop_k(3,dest_list,cnf_path)
             else:
                 if not nop_k(n-1,dest_list,cnf_path):
                     print(n-1,end=" ")
                 else:
                     k = search_k(math.ceil(breakpoints/2)-1,min(breakpoints,n-1),dest_list,cnf_path)
+                    nop_k(k+1,dest_list,cnf_path)
                     print(k,end=" ")
     subprocess.run(["rm","temp.cnf"])
     print("dictflag",end=" ")
@@ -383,7 +385,7 @@ def nop_k(k,dest_list,cnf_path):
         				q = int( (num_we_use - (p-1)*n*(n-1)) / (n-1)) + 1
         				kk = num_we_use - (p-1)*n*(n-1) - (q-1)*(n-1)
         				r_list.append((p,q,kk))
-        operation_lists[k] = r_list
+        operation_lists[len(r_list)] = r_list
         return True
 
 
