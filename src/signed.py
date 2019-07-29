@@ -37,13 +37,13 @@ def skeleton():
 	cnf_file = open(cnf_path,'x')
 	cnf_file.close()
 	num_of_lines = 0
-	num_of_lines += f1(perm_list,cnf_path,n)
-	#header(perm_list,cnf_path,num_of_lines + 1)
+	num_of_lines += f1(cnf_path,n)
 	# ......
-	#subprocess.run(["rm","temp_signed.cnf"])
+	header(cnf_path,num_of_lines + 1)
+	subprocess.run(["rm","temp_signed.cnf"])
 
 
-def header(dest_list,cnf_path,num_of_clauses):
+def header(cnf_path,num_of_clauses):
     n = len(dest_list)
     num_of_vars = 0
     # X[k : 1 to n-1][i : 1 to n][p : 1 to n][q : 1 to n]
@@ -81,7 +81,7 @@ def s_index(l,i,n):
 	return (l-1)*n + i + (pow(n,4) - pow(n,2) + n - 1) 
 
 
-def f1(perm_list,cnf_path,n):
+def f1(cnf_path,n):
 	cnf_file = open(cnf_path,'a')
 	clause_count = 0
 	for k in range(1,n):
@@ -101,6 +101,44 @@ def f1(perm_list,cnf_path,n):
 	return clause_count
 
 
+def f2(cnf_path,n):
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for i in range(1,n+1):
+		var_list = []
+		for q in range(1,n+1):
+			var_list.append(x_index(1,i,i,q,n))
+		for elem in var_list:
+			cnf_file.write(str(elem)+" ")
+		cnf_file.write("0\n")
+		clause_count += 1
+		for pair in itertools.combinations(var_list,2):
+			cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+			clause_count += 1
+	cnf_file.close()
+	return clause_count
+
+
+def f3(perm_list,cnf_path,n):
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for i in range(1,n+1):
+		var_list = []
+		for p in range(1,n+1):
+			var_list.append(x_index(2n-1,i,p,perm_list.index(i)+1),n)
+		for elem in var_list:
+			cnf_file.write(str(elem)+" ")
+		cnf_file.write("0\n")
+		clause_count += 1
+		for pair in itertools.combinations(var_list,2):
+			cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+			clause_count += 1
+	cnf_file.close()
+	return clause_count
+
+
+def f4(cnf_path,n):
+	return 
 
 
 
