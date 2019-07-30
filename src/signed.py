@@ -65,8 +65,8 @@ def header(cnf_path,num_of_clauses,n,upper_bound):
     num_of_vars += pow(n,2) * upper_bound
     # NOP : 1 to upper_bound
     num_of_vars += upper_bound
-    # S[l : 1 to upper_bound][i : 1 to n]
-    num_of_vars += n * upper_bound
+    # S[l : 1 to upper_bound+1][i : 1 to n]
+    num_of_vars += n * (upper_bound+1)
     line_prepender(cnf_path,"p cnf "+str(num_of_vars)+" "+str(num_of_clauses))
 
 
@@ -279,6 +279,20 @@ def f9(cnf_path,n,upper_bound):
 		cnf_file.write(str(nop_index(k+1,n,upper_bound))+" -"+str(nop_index(k,n,upper_bound))+" 0\n")
 	cnf_file.close()
 	return upper_bound - 1
+
+
+def f_sign(sign_list,cnf_path,n,upper_bound):
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for l in range(1,upper_bound+1):
+		for p in range(1,n+1):
+			for q in range(p,n+1):
+				for offset in range(0,q-p+1):
+					i = p + offset
+					j = q - offset
+					
+	return
+
 
 
 skeleton()
