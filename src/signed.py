@@ -4,7 +4,9 @@ import itertools
 import math
 import time
 
+
 sat_instances = {}
+
 
 def skeleton():
 	raw_list = sys.argv[1:]
@@ -41,21 +43,30 @@ def skeleton():
 	cnf_file.close()
 	num_of_lines = 0
 	num_of_lines += f1(cnf_path,n,upper_bound)
+	num_of_lines += f2(cnf_path,n)
+	num_of_lines += f3(perm_list,cnf_path,n,upper_bound)
+	num_of_lines += f4(cnf_path,n,upper_bound)
+	num_of_lines += f5(cnf_path,n,upper_bound)
+	num_of_lines += f6(cnf_path,n,upper_bound)
+	num_of_lines += f7(cnf_path,n,upper_bound)
+	num_of_lines += f8(cnf_path,n,upper_bound)
+	num_of_lines += f9(cnf_path,n,upper_bound)
+	# signed restrictions
 	# ......
-	header(cnf_path,num_of_lines+1,n)
-	subprocess.run(["rm","temp_signed.cnf"])
+	header(cnf_path,num_of_lines,n,upper_bound)
+	#subprocess.run(["rm","temp_signed.cnf"])
 
 
-def header(cnf_path,num_of_clauses,n):
+def header(cnf_path,num_of_clauses,n,upper_bound):
     num_of_vars = 0
-    # X[k : 1 to n-1][i : 1 to n][p : 1 to n][q : 1 to n]
-    num_of_vars += pow(n,4)-pow(n,3)
-    # R[p : 1 to n][q : 1 to n][k : 1 to n-1]
-    num_of_vars += pow(n,3)-pow(n,2)
-    # NOP : 1 to n-1
-    num_of_vars += n - 1
-    # S[l : 1 to n-1][i : 1 to n]
-    num_of_vars += n * (n - 1)
+    # X[k : 1 to upper_bound][i : 1 to n][p : 1 to n][q : 1 to n]
+    num_of_vars += pow(n,3) * upper_bound
+    # R[p : 1 to n][q : 1 to n][k : 1 to upper_bound]
+    num_of_vars += pow(n,2) * upper_bound
+    # NOP : 1 to upper_bound
+    num_of_vars += upper_bound
+    # S[l : 1 to upper_bound][i : 1 to n]
+    num_of_vars += n * upper_bound
     line_prepender(cnf_path,"p cnf "+str(num_of_vars)+" "+str(num_of_clauses))
 
 
@@ -71,16 +82,16 @@ def x_index(k,i,p,q,n):
 	return (k-1)*pow(n,3) + (i-1)*pow(n,2) + (p-1)*n + q
 
 
-def r_index(p,q,k,n):
-	return (p-1)*(n*n-n) + (q-1)*(n-1) + k + pow(n,4)-pow(n,3)
+def r_index(p,q,k,n,upper_bound):
+	return (p-1)*n*upper_bound + (q-1)*upper_bound + k + pow(n,3) * upper_bound
 
 
-def nop_index(k,n):
-	return pow(n,4) - pow(n,2) + k
+def nop_index(k,n,upper_bound):
+	return pow(n,3) * upper_bound + pow(n,2) * upper_bound + k
 
 
-def s_index(l,i,n):
-	return (l-1)*n + i + (pow(n,4) - pow(n,2) + n - 1) 
+def s_index(l,i,n,upper_bound):
+	return (l-1)*n + i + pow(n,3) * upper_bound + pow(n,2) * upper_bound + upper_bound
 
 
 def f1(cnf_path,n,upper_bound):
@@ -88,10 +99,10 @@ def f1(cnf_path,n,upper_bound):
 	clause_count = 0
 	for k in range(1,upper_bound+1):
 		var_list = []
-		var_list.append(nop_index(k,n))
+		var_list.append(nop_index(k,n,upper_bound))
 		for p in range(1,n):
 			for q in range(p,n+1): # CHANGED
-				var_list.append(r_index(p,q,k,n))
+				var_list.append(r_index(p,q,k,n,upper_bound))
 		for elem in var_list:
 			cnf_file.write(str(elem)+" ")
 		cnf_file.write("0\n")
@@ -121,13 +132,13 @@ def f2(cnf_path,n):
 	return clause_count
 
 
-def f3(perm_list,cnf_path,n):
+def f3(perm_list,cnf_path,n,upper_bound):
 	cnf_file = open(cnf_path,'a')
 	clause_count = 0
 	for i in range(1,n+1):
 		var_list = []
 		for p in range(1,n+1):
-			var_list.append(x_index(2*n-1,i,p,perm_list.index(i)+1),n)
+			var_list.append(x_index(upper_bound,i,p,perm_list.index(i)+1,n))
 		for elem in var_list:
 			cnf_file.write(str(elem)+" ")
 		cnf_file.write("0\n")
@@ -215,15 +226,15 @@ def f7(cnf_path,n,upper_bound):
 			var_list_2 = []
 			for i in range(1,n+1):
 				var_list_1.append(x_index(k,i,w,w,n))
-			var_list_2.append(nop_index(k,n))
+			var_list_2.append(nop_index(k,n,upper_bound))
 			for p in range(1,n):
 				for q in range(p,n+1):
 					if 2 * w == p + q:
-						var_list_2.append(r_index(p,q,k,n))
+						var_list_2.append(r_index(p,q,k,n,upper_bound))
 					if p < w and q < w:
-						var_list_2.append(r_index(p,q,k,n))
+						var_list_2.append(r_index(p,q,k,n,upper_bound))
 					if p > w and q > w:
-						var_list_2.append(r_index(p,q,k,n))
+						var_list_2.append(r_index(p,q,k,n,upper_bound))
 			second_string = ""
 			for var in var_list_2:
 				second_string += str(var) + " "
@@ -251,7 +262,7 @@ def f8(cnf_path,n,upper_bound):
 				c = min(a-1,n-b)
 				for d in range(0,c+1):
 					if a - d != b + d:
-						var_list_2.append(r_index(a-d,b+d,k,n))
+						var_list_2.append(r_index(a-d,b+d,k,n,upper_bound))
 				second_string = ""
 				for var in var_list_2:
 					second_string += str(var) + " "
@@ -265,7 +276,7 @@ def f8(cnf_path,n,upper_bound):
 def f9(cnf_path,n,upper_bound):
 	cnf_file = open(cnf_path,'a')
 	for k in range(1,upper_bound):
-		cnf_file.write(str(nop_index(k+1,n))+" -"+str(nop_index(k,n))+" 0\n")
+		cnf_file.write(str(nop_index(k+1,n,upper_bound))+" -"+str(nop_index(k,n,upper_bound))+" 0\n")
 	cnf_file.close()
 	return upper_bound - 1
 
