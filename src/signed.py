@@ -6,6 +6,7 @@ import time
 
 
 sat_instances = {}
+operation_lists = {}
 
 
 def skeleton():
@@ -52,9 +53,23 @@ def skeleton():
 	num_of_lines += f8(cnf_path,n,upper_bound)
 	num_of_lines += f9(cnf_path,n,upper_bound)
 	# signed restrictions
-	# ......
-	header(cnf_path,num_of_lines,n,upper_bound)
-	#subprocess.run(["rm","temp_signed.cnf"])
+	num_of_lines += f_sign(sign_list,cnf_path,n,upper_bound)
+	header(cnf_path,num_of_lines+1,n,upper_bound)
+	# optimization on search
+	if nop_k(1,cnf_path,n,upper_bound):
+		print(0,end=" ")
+	else:
+		if not nop_k(upper_bound,cnf_path,n,upper_bound):
+			print(upper_bound,end=" ")
+		else:
+			k = search_k(max(lower_bound-1,1),upper_bound,cnf_path,n,upper_bound)
+			nop_k(k+1,cnf_path,n,upper_bound)
+			print(k,end=" ")
+	subprocess.run(["rm","temp_signed.cnf"])
+	print("dictflag",end=" ")
+	print(sat_instances,end=" ")
+	print("operflag",end=" ")
+	print(operation_lists,end=" ")
 
 
 def header(cnf_path,num_of_clauses,n,upper_bound):
@@ -100,7 +115,7 @@ def f1(cnf_path,n,upper_bound):
 	for k in range(1,upper_bound+1):
 		var_list = []
 		var_list.append(nop_index(k,n,upper_bound))
-		for p in range(1,n):
+		for p in range(1,n+1):
 			for q in range(p,n+1): # CHANGED
 				var_list.append(r_index(p,q,k,n,upper_bound))
 		for elem in var_list:
@@ -227,7 +242,7 @@ def f7(cnf_path,n,upper_bound):
 			for i in range(1,n+1):
 				var_list_1.append(x_index(k,i,w,w,n))
 			var_list_2.append(nop_index(k,n,upper_bound))
-			for p in range(1,n):
+			for p in range(1,n+1):
 				for q in range(p,n+1):
 					if 2 * w == p + q:
 						var_list_2.append(r_index(p,q,k,n,upper_bound))
@@ -284,15 +299,95 @@ def f9(cnf_path,n,upper_bound):
 def f_sign(sign_list,cnf_path,n,upper_bound):
 	cnf_file = open(cnf_path,'a')
 	clause_count = 0
+	for i in range(1,n+1):
+		if sign_list[i-1]:
+			cnf_file.write(str(s_index(upper_bound+1,i,n,upper_bound))+" 0\n")
+			clause_count += 1
+		else:
+			cnf_file.write("-"+str(s_index(upper_bound+1,i,n,upper_bound))+" 0\n")
+			clause_count += 1
+	for i in range(1,n+1):
+		cnf_file.write(str(s_index(1,i,n,upper_bound))+" 0\n")
+		clause_count += 1
 	for l in range(1,upper_bound+1):
 		for p in range(1,n+1):
 			for q in range(p,n+1):
 				for offset in range(0,q-p+1):
 					i = p + offset
 					j = q - offset
-					
-	return
+					s1 = "-"+str(r_index(p,q,l,n,upper_bound))+" -"+str(s_index(l+1,i,n,upper_bound))+" -"+str(s_index(l,j,n,upper_bound))
+					s2 = "-"+str(r_index(p,q,l,n,upper_bound))+" "+str(s_index(l+1,i,n,upper_bound))+" "+str(s_index(l,j,n,upper_bound))
+					cnf_file.write(s1+" 0\n")
+					cnf_file.write(s2+" 0\n")
+					clause_count += 2
+				for i in range(1,p):
+					cnf_file.write("-"+str(r_index(p,q,l,n,upper_bound))+" "+str(s_index(l+1,i,n,upper_bound))+" -"+str(s_index(l,i,n,upper_bound))+" 0\n")
+					cnf_file.write("-"+str(r_index(p,q,l,n,upper_bound))+" -"+str(s_index(l+1,i,n,upper_bound))+" "+str(s_index(l,i,n,upper_bound))+" 0\n")
+					clause_count += 2
+				for i in range(p+1,n+1):
+					cnf_file.write("-"+str(r_index(p,q,l,n,upper_bound))+" "+str(s_index(l+1,i,n,upper_bound))+" -"+str(s_index(l,i,n,upper_bound))+" 0\n")
+					cnf_file.write("-"+str(r_index(p,q,l,n,upper_bound))+" -"+str(s_index(l+1,i,n,upper_bound))+" "+str(s_index(l,i,n,upper_bound))+" 0\n")
+					clause_count += 2
+		for i in range(1,n+1):
+			cnf_file.write("-"+str(nop_index(l,n,upper_bound))+" "+str(s_index(l+1,i,n,upper_bound))+" -"+str(s_index(l,i,n,upper_bound))+" 0\n")
+			cnf_file.write("-"+str(nop_index(l,n,upper_bound))+" -"+str(s_index(l+1,i,n,upper_bound))+" "+str(s_index(l,i,n,upper_bound))+" 0\n")
+			clause_count += 2
+	cnf_file.close()
+	return clause_count
 
+
+def search_k(start,end,cnf_path,n,upper_bound):
+	if end - start == 2:
+		if (not nop_k(start,cnf_path,n,upper_bound)) and nop_k(start+1,cnf_path,n,upper_bound):
+			return start
+		else:
+			return start + 1
+	if end - start == 1:
+		return start
+	left_one = nop_k(int((start+end)/2),cnf_path,n,upper_bound)
+	right_one = nop_k(int((start+end)/2)+1,cnf_path,n,upper_bound)
+	if left_one == False and right_one == True:
+		return int((start+end)/2)
+	if left_one == False and right_one == False:
+		return search_k(int((start+end)/2)+1,end,cnf_path,n,upper_bound)
+	if left_one == True and right_one == True:
+		return search_k(start,int((start+end)/2),cnf_path,n,upper_bound)
+	print("Should not get here.")
+	return "Nothing"
+
+
+def nop_k(k,cnf_path,n,upper_bound):
+	if k in sat_instances:
+		return sat_instances[k][0]
+	subprocess.run(["cp","temp_signed.cnf","temp_signed_ongoing.cnf"])
+	cnf_file = open("temp_signed_ongoing.cnf",'a')
+	cnf_file.write(str(nop_index(k,n,upper_bound))+" 0\n")
+	cnf_file.close()
+	start_time = time.time()
+	result = subprocess.run(["../sat_solver/lingeling","temp_signed_ongoing.cnf"],capture_output=True).stdout
+	end_time = time.time()
+	subprocess.run(["rm","temp_signed_ongoing.cnf"])
+	if b'UNSATISFIABLE' in result:
+		sat_instances[k] = (False,end_time-start_time)
+		return False
+	else:
+		sat_instances[k] = (True,end_time-start_time)
+		new_result = result.decode("utf-8")
+		sat_index = new_result.find("SATISFIABLE")
+		start_index = new_result[sat_index:].find("v")
+		end_index = new_result[sat_index:].find(" 0")
+		r_list = []
+		for num in new_result[sat_index+start_index:sat_index+end_index].split():
+			if not num == 'v':
+				if int(num) > 0:
+					if int(num) > pow(n,3) * upper_bound and int(num) <= (pow(n,3)+pow(n,2)) * upper_bound:
+						num_we_use = int(num) - pow(n,3) * upper_bound
+						p = int(num_we_use / (n*upper_bound)) + 1
+						q = int((num_we_use - (p-1)*n*upper_bound)/upper_bound) + 1
+						kk = num_we_use - (p-1)*n*upper_bound - (q-1)*upper_bound
+						r_list.append((p,q,kk))
+		operation_lists[len(r_list)] = r_list
+		return True
 
 
 skeleton()
