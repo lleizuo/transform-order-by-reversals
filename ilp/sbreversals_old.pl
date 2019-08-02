@@ -1,13 +1,14 @@
 # sbreversals.pl  
 #
 # DG modify breversals for the signed reversals problem.
-# July 23, 2019 - Aug. 1, 2019
+# July 23, 2019
 #
+# DG Sept. 14, 2017
 # This creates the  compact ILP for sorting-by-reversals problem. The first permutation is assumed to be
-# the identity permutation, i.e., the integers from 1 to n in natural order, and all signs positive. So the input only specifies the second permutation,
-# i.e., P2, and its signs.  
-# Note that  the X variables are the  driving variables, not the R variables. 
+# the identity permutation, i.e., the integers from 1 to n in natural order. So the input only specifies the second permutation,
+# i.e., P2.  # Note that  the X variables are the  driving variables, not the R variables. 
 #
+# This is the version discussed in ``Integer Programming in Computational and Systems Biology".
 #
 # The X variable has four parameters: level, integer, position at the given level, position at the next level, i.e., level+1.
 # So X is a essentially a ``flow out" variable. For example, X(2,3,1,5) indicates whether at level 2, integer 3 moves
@@ -18,15 +19,17 @@
 #
 # The S variable, indicating sign, has two parameters: level, and position. Note that the second parameter
 # refers to the position in the list of integers, at the given level. At each level, the permutation at that level, and the list of
-# signs are in correct alignment. 
+# signs are in correct alignment, but the logic depends on interpreting the second parameter in each S variable as a *position* in the
+# permutaion, not an integer in the permuation.
 #
 # Call the program on a command line in a terminal window as:
 # perl breversals.pl number file-name
 
 # where ``number" is n, the number of integers in the permutation, and ``file-name" is the name of the file where
 # permutation P2 is written on one line, with spaces between the numbers.
-# The second line of the file should have a list of n 0s and 1s. At each position, the sign specifies the sign of the 
-# integer aligned with it,  on the first line.
+# The second line of the file should have a list of n 0s and 1s. At each position, the sign specifies the initial sign of the 
+# integer aligned with it,
+# on the first line.
 
 # The ILP formulation is output to a file whose name begins with the letter `SR', followed
 # by the input file-name, followed by `.lp'.
@@ -254,18 +257,15 @@ $bin{"NOP$ls"} = 1;
 $signconstraints = ""; 
 $sign = <IN>; # read the line in the input file that specifying the signs. 
               # Use 0 for negative and 1 for positive. Separate by spaces. A 1 at position $i means that integer $pi[$i] has
-              # sign 1 in permutation P2; and similarly for a 0 at position $i. At the first level, the
-              # permutation is assumed to be the natural permutation, where all of the integers have sign 1.
-              # The signs at the first and last levels are implemented in the ILP by the next code fragment.
+              # sign 1; and similarly for a 0 at position $i. At the last level, all of the positions must have sign 1.
+              # The signs at the first and last levels are implemented in the ILP be the next code fragment.
 chomp $sign;
 @signs = split(' ',$sign);
 print "@signs \n";
 foreach $i (1 .. $n) {
+      $signconstraints .= "S(1,$i) = $signs[$i-1] \n";
       $upprb1 = $upprb + 1;
-      $signconstraints .= "S(1,$i) = 1 \n";   # reverse the right hand sides of the next two equalities to
-                                              # modify the program so that it goes from natural order with given signs
-                                              # to the input permutation P2 with all positive signs.
-      $signconstraints .= "S($upprb1,$i) = $signs[$i-1] \n";
+      $signconstraints .= "S($upprb1,$i) = 1 \n";
 }
 print OUT "$signconstraints \n\n";
 

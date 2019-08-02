@@ -324,7 +324,7 @@ def f_sign(sign_list,cnf_path,n,upper_bound):
 					cnf_file.write("-"+str(r_index(p,q,l,n,upper_bound))+" "+str(s_index(l+1,i,n,upper_bound))+" -"+str(s_index(l,i,n,upper_bound))+" 0\n")
 					cnf_file.write("-"+str(r_index(p,q,l,n,upper_bound))+" -"+str(s_index(l+1,i,n,upper_bound))+" "+str(s_index(l,i,n,upper_bound))+" 0\n")
 					clause_count += 2
-				for i in range(p+1,n+1):
+				for i in range(q+1,n+1):
 					cnf_file.write("-"+str(r_index(p,q,l,n,upper_bound))+" "+str(s_index(l+1,i,n,upper_bound))+" -"+str(s_index(l,i,n,upper_bound))+" 0\n")
 					cnf_file.write("-"+str(r_index(p,q,l,n,upper_bound))+" -"+str(s_index(l+1,i,n,upper_bound))+" "+str(s_index(l,i,n,upper_bound))+" 0\n")
 					clause_count += 2
