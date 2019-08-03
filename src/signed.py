@@ -54,6 +54,7 @@ def skeleton():
 	num_of_lines += f9(cnf_path,n,upper_bound)
 	# signed restrictions
 	num_of_lines += f_sign(sign_list,cnf_path,n,upper_bound)
+	print(num_of_lines,end=" ")
 	header(cnf_path,num_of_lines+1,n,upper_bound)
 	# optimization on search
 	if nop_k(1,cnf_path,n,upper_bound):
