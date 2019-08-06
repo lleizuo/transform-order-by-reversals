@@ -21,6 +21,8 @@ def skeleton():
 		return 
 	start_perm = perm_duo[0]
 	end_perm = perm_duo[1]
+	print(start_perm)
+	print(end_perm)
 	n = len(start_perm)
 	# possible breakpoints
 	# creating the cnf file
@@ -30,8 +32,13 @@ def skeleton():
 	num_of_lines = 0
 	num_of_lines += f1(start_perm,end_perm,cnf_path)
 	num_of_lines += f2(start_perm,end_perm,cnf_path)
+	num_of_lines += f3(start_perm,end_perm,cnf_path)
+	num_of_lines += f4(start_perm,end_perm,cnf_path)
+	num_of_lines += f5(start_perm,end_perm,cnf_path)
+	num_of_lines += f6(start_perm,end_perm,cnf_path)
 	print(num_of_lines,end=" ")
 	header(start_perm,end_perm,cnf_path,num_of_lines+1)
+	nop_k(2,n,cnf_path)
 
 
 
@@ -56,7 +63,7 @@ def f1(start_perm,end_perm,cnf_path): # NOP + Sigma R = 1
 		return clause_count
 
 
-def f2(start_perm,end_perm,cnf_path): 
+def f2(start_perm,end_perm,cnf_path): # A + C + G + T = 1
 	n = len(start_perm)
 	cnf_file = open(cnf_path,'a')
 	clause_count = 0
@@ -78,6 +85,87 @@ def f2(start_perm,end_perm,cnf_path):
 	return clause_count
 
 
+def f3(start_perm,end_perm,cnf_path):  # level 1
+	n = len(start_perm)
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for t in range(1,n+1):
+		if start_perm[t-1] == 'A':
+			cnf_file.write(str(A(t,1,n))+" 0\n")
+		if start_perm[t-1] == 'C':
+			cnf_file.write(str(C(t,1,n))+" 0\n")
+		if start_perm[t-1] == 'G':
+			cnf_file.write(str(G(t,1,n))+" 0\n")
+		if start_perm[t-1] == 'T':
+			cnf_file.write(str(T(t,1,n))+" 0\n")
+		clause_count += 1
+	cnf_file.close()
+	return clause_count
+
+
+def f4(start_perm,end_perm,cnf_path):  # level n 
+	n = len(start_perm)
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0 
+	for t in range(1,n+1):
+		if end_perm[t-1] == 'A':
+			cnf_file.write(str(A(t,n,n))+" 0\n")
+		if end_perm[t-1] == 'C':
+			cnf_file.write(str(C(t,n,n))+" 0\n")
+		if end_perm[t-1] == 'G':
+			cnf_file.write(str(G(t,n,n))+" 0\n")
+		if end_perm[t-1] == 'T':
+			cnf_file.write(str(T(t,n,n))+" 0\n")
+		clause_count += 1
+	cnf_file.close()
+	return clause_count
+
+
+def f5(start_perm,end_perm,cnf_path): # R -> (A -> A) y3 | ~y1 | ~y2
+	n = len(start_perm)
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for k in range(1,n):
+		for p in range(1,n):
+			for q in range(p+1,n+1):
+				for t in range(1,n+1):
+					if t < p or t > q:
+						cnf_file.write(str(A(t,k+1,n))+" -"+str(R(p,q,k,n))+" -"+str(A(t,k,n))+" 0\n")
+						cnf_file.write(str(C(t,k+1,n))+" -"+str(R(p,q,k,n))+" -"+str(C(t,k,n))+" 0\n")
+						cnf_file.write(str(G(t,k+1,n))+" -"+str(R(p,q,k,n))+" -"+str(G(t,k,n))+" 0\n")
+						cnf_file.write(str(T(t,k+1,n))+" -"+str(R(p,q,k,n))+" -"+str(T(t,k,n))+" 0\n")
+					if p <= t and t <= q:
+						cnf_file.write(str(A(p+q-t,k+1,n))+" -"+str(R(p,q,k,n))+" -"+str(A(t,k,n))+" 0\n")
+						cnf_file.write(str(C(p+q-t,k+1,n))+" -"+str(R(p,q,k,n))+" -"+str(C(t,k,n))+" 0\n")
+						cnf_file.write(str(G(p+q-t,k+1,n))+" -"+str(R(p,q,k,n))+" -"+str(G(t,k,n))+" 0\n")
+						cnf_file.write(str(T(p+q-t,k+1,n))+" -"+str(R(p,q,k,n))+" -"+str(T(t,k,n))+" 0\n")
+					clause_count += 4
+	cnf_file.close()
+	return clause_count
+
+
+def f5(start_perm,end_perm,cnf_path): # NOP -> (A -> A) y3 | ~y1 | ~y2
+	n = len(start_perm)
+	cnf_file = open(cnf_path,'a')
+	clause_count = 0
+	for k in range(1,n):
+		for t in range(1,n+1):
+			cnf_file.write(str(A(t,k+1,n))+" -"+str(NOP(k,n))+" -"+str(A(t,k,n))+" 0\n")
+			cnf_file.write(str(C(t,k+1,n))+" -"+str(NOP(k,n))+" -"+str(C(t,k,n))+" 0\n")
+			cnf_file.write(str(G(t,k+1,n))+" -"+str(NOP(k,n))+" -"+str(G(t,k,n))+" 0\n")
+			cnf_file.write(str(T(t,k+1,n))+" -"+str(NOP(k,n))+" -"+str(T(t,k,n))+" 0\n")
+			clause_count += 4
+	cnf_file.close()
+	return clause_count
+
+
+def f6(start_perm,end_perm,cnf_path):
+	n = len(start_perm)
+	cnf_file = open(cnf_path,'a')
+	for k in range(1,n-1):
+		cnf_file.write(str(NOP(k+1,n))+" -"+str(NOP(k,n))+" 0\n")
+	cnf_file.close()
+	return n-2
 
 
 def header(start_perm,end_perm,cnf_path,num_of_clauses):
@@ -95,6 +183,7 @@ def header(start_perm,end_perm,cnf_path,num_of_clauses):
 	num_of_vars += pow(n,3) - pow(n,2)
 	# NOP : 1 to n-1
 	num_of_vars += n - 1
+	line_prepender(cnf_path,"p cnf "+str(num_of_vars)+" "+str(num_of_clauses))
 
 
 def line_prepender(cnf_path, line):
@@ -128,6 +217,14 @@ def R(p,q,k,n):
 def NOP(k,n):
 	return k + pow(n,2)*3 + pow(n,3)
 
+
+def nop_k(k,n,cnf_path):
+	subprocess.run(["cp","temp_extension.cnf","temp_extension_ongoing.cnf"])
+	cnf_file = open("temp_extension_ongoing.cnf",'a')
+	cnf_file.write(str(NOP(k,n))+" 0\n")
+	cnf_file.close()
+	result = subprocess.run(["../sat_solver/lingeling","temp_extension_ongoing.cnf"],capture_output=True).stdout
+	print(result.decode("utf-8"))
 
 
 skeleton()
