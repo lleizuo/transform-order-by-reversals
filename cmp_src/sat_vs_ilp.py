@@ -5,13 +5,22 @@ import subprocess
 import time
 
 def skeleton():
-	if not sys.argv[1].isdigit():
-		print("Nah")
+	if len(sys.argv) <= 1:
+		print("Input error.")
 		return
-	if int(sys.argv[1]) <= 2:
+	if not sys.argv[1] in {"signed","unsigned"}:
+		print("Input error.")
+		return 
+	if not sys.argv[2].isdigit():
+		print("Input error.")
+		return
+	if int(sys.argv[2]) <= 2:
 		print("No")
 		return
-	sat_data = pd.read_csv("../data2/"+sys.argv[1]+".csv",index_col=0)
+	if not sys.argv[3].isdigit():
+		print("Input error.")
+		return
+	sat_data = pd.read_csv("../data2/"+sys.argv[1]+"_"+sys.argv[2]+"_"+sys.argv[3]+".csv",index_col=0)
 	ilp_time = []
 	for index,row in sat_data.iterrows():
 		li = ast.literal_eval(row['list'])
