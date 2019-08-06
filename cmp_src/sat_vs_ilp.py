@@ -25,14 +25,25 @@ def skeleton():
 	for index,row in sat_data.iterrows():
 		li = ast.literal_eval(row['list'])
 		li_str = ""
-		for elem in li:
-			li_str += elem + " "
-		li_str = li_str.strip()
+		if sys.argv[1] == "signed":
+			for elem in li:
+				li_str += str(abs(int(elem))) + " "
+			li_str += "\n"
+			for elem in li:
+				if int(elem) > 0:
+					li_str += "1 "
+				else:
+					li_str += "0 "
+		else:	
+			for elem in li:
+				li_str += elem + " "
+		#li_str = li_str.strip()
 		file_path = 'listfile'
 		li_file = open(file_path,'x')
 		li_file.write(li_str)
 		li_file.close()
-		subprocess.run(["perl","../ilp/breversals.pl",sys.argv[1],file_path])
+		# TODO
+		subprocess.run(["perl","../ilp/breversals.pl",sys.argv[2],file_path])
 		start_time = time.time()
 		subprocess.run(["gurobi_cl","Rlistfile.lp"])
 		end_time = time.time()
