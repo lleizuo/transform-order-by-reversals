@@ -42,22 +42,30 @@ def skeleton():
 		li_file = open(file_path,'x')
 		li_file.write(li_str)
 		li_file.close()
-		# TODO
-		subprocess.run(["perl","../ilp/breversals.pl",sys.argv[2],file_path])
+		if sys.argv[1] == "signed":
+			subprocess.run(["perl","../ilp/sbreversals.pl",sys.argv[2],file_path])
+		else:
+			subprocess.run(["perl","../ilp/breversals.pl",sys.argv[2],file_path])
 		start_time = time.time()
-		subprocess.run(["gurobi_cl","Rlistfile.lp"])
+		if sys.argv[1] == "signed":
+			subprocess.run(["gurobi_cl","SRlistfile.lp"])
+		else:
+			subprocess.run(["gurobi_cl","Rlistfile.lp"])
 		end_time = time.time()
 		ilp_time.append(end_time - start_time)
 		subprocess.run(["rm","listfile"])
 		subprocess.run(["rm","gurobi.log"]) 
-		subprocess.run(["rm","Rlistfile.lp"])
+		if sys.argv[1] == "signed":
+			subprocess.run(["rm","SRlistfile.lp"])
+		else:
+			subprocess.run(["rm","Rlistfile.lp"])
 	sat_data['time_ilp'] = ilp_time
 	sat_data = sat_data.drop(columns=['details','num_of_clauses'])
 	sat_data = sat_data.rename(columns={'elapsed_time':'time_sat'})
 	cols = sat_data.columns.tolist()
 	cols = cols[-1:] + cols[:-1]
 	sat_data = sat_data[cols]
-	sat_data.to_csv("../cmp_data/cmp_"+sys.argv[1]+".csv")
+	sat_data.to_csv("../cmp_data/cmp_"+sys.argv[1]+"_"+sys.argv[2]+"_"+sys.argv[3]+".csv")
 
 
 skeleton()
