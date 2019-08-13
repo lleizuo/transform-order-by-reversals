@@ -365,7 +365,7 @@ def nop_k(k,cnf_path,n,upper_bound):
 	cnf_file.write(str(nop_index(k,n,upper_bound))+" 0\n")
 	cnf_file.close()
 	start_time = time.time()
-	result = subprocess.run(["../sat_solver/lingeling","temp_signed_ongoing.cnf"],capture_output=True).stdout
+	result = subprocess.run(["../sat_solver/plingeling","temp_signed_ongoing.cnf"],capture_output=True).stdout
 	end_time = time.time()
 	subprocess.run(["rm","temp_signed_ongoing.cnf"])
 	if b'UNSATISFIABLE' in result:

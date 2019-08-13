@@ -45,7 +45,7 @@ def skeleton():
         detaildict = ast.literal_eval(decode_result[flagpos+9:flagpos2])
         detailoper = ast.literal_eval(decode_result[flagpos2+9:])
         data_list.append({'list':work_list,'elapsed_time':end_time-start_time,'num_of_clauses':parse_result[0],'num_of_operations':parse_result[1],"details":detaildict,"operations":detailoper})
-    pd.DataFrame(data_list).to_csv("../data2/signed_"+str(n)+"_"+str(data_num)+".csv")
+    pd.DataFrame(data_list).to_csv("../data2/p_signed_"+str(n)+"_"+str(data_num)+".csv")
 
 
 def givesign():
