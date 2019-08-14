@@ -35,7 +35,7 @@ def skeleton():
     for work_list in rand_select:
         print(work_list)
         start_time = time.time()
-        result = subprocess.run(["python3","main2.py"] + work_list,capture_output=True).stdout
+        result = subprocess.run(["python3","unsigned.py"] + work_list,capture_output=True).stdout
         end_time = time.time()
         decode_result = result.decode("utf-8")
         flagpos = decode_result.find("dictflag")
