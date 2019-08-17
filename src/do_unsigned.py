@@ -16,9 +16,22 @@ def skeleton():
 	detailoper = ast.literal_eval(decode_result[flagpos2+9:])
 	print("List : "+str(raw_list))
 	print("Elapsed time : "+str(end_time-start_time))
+	print("Number of clauses : "+str(parse_result[0]))
+	print("Number of operations : "+str(parse_result[1]))
+	print("Running time of SAT instances : ")
+	for elem in detaildict:
+		print("    "+str(elem)+" "+str(TFtoSAT(detaildict[elem][0]))+" "+str(detaildict[elem][1]))
+	if len(detailoper) > 0:
+		optimal_solution = detailoper[min(detailoper)]
+		print("Optimal solution : "+str(optimal_solution))
 
 
 
+def TFtoSAT(truefalse):
+	if truefalse:
+		return "satisfiable"
+	else:
+		return "unsatisfiable"
 
 
 skeleton()
