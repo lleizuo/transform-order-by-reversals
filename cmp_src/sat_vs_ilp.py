@@ -20,7 +20,7 @@ def skeleton():
 	if not sys.argv[3].isdigit():
 		print("Input error.")
 		return
-	sat_data = pd.read_csv("../data2/"+sys.argv[1]+"_"+sys.argv[2]+"_"+sys.argv[3]+".csv",index_col=0)
+	sat_data = pd.read_csv("../data2/p_"+sys.argv[1]+"_"+sys.argv[2]+"_"+sys.argv[3]+".csv",index_col=0)
 	ilp_time = []
 	for index,row in sat_data.iterrows():
 		li = ast.literal_eval(row['list'])
@@ -65,7 +65,7 @@ def skeleton():
 	cols = sat_data.columns.tolist()
 	cols = cols[-1:] + cols[:-1]
 	sat_data = sat_data[cols]
-	sat_data.to_csv("../cmp_data/cmp_"+sys.argv[1]+"_"+sys.argv[2]+"_"+sys.argv[3]+".csv")
+	sat_data.to_csv("../cmp_data/p_cmp_"+sys.argv[1]+"_"+sys.argv[2]+"_"+sys.argv[3]+".csv")
 
 
 skeleton()

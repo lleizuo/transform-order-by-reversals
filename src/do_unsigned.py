@@ -19,12 +19,12 @@ def skeleton():
 	print("Number of clauses : "+str(parse_result[0]))
 	print("Number of operations : "+str(parse_result[1]))
 	print("Running time of SAT instances : ")
+	print("Number of cycles : "+find_cycle(raw_list))
 	for elem in detaildict:
-		print("    "+str(elem)+" "+str(TFtoSAT(detaildict[elem][0]))+" "+str(detaildict[elem][1]))
+		print("    NOP("+str(elem)+") "+str(TFtoSAT(detaildict[elem][0]))+" "+str(detaildict[elem][1]))
 	if len(detailoper) > 0:
 		optimal_solution = detailoper[min(detailoper)]
 		print("Optimal solution : "+str(optimal_solution))
-
 
 
 def TFtoSAT(truefalse):
@@ -32,6 +32,23 @@ def TFtoSAT(truefalse):
 		return "satisfiable"
 	else:
 		return "unsatisfiable"
+
+
+def find_cycle(raw_list):
+	n = len(raw_list)
+	work_list = [abs(elem) for elem in raw_list]
+	flag_list = [0 for elem in raw_list]
+	cycle_count = 0
+	for elem in range(n):
+		if flag_list[elem] == 0:
+			flag_list[elem] = 1
+			temp = work_list[elem] # temp = 7
+			while work_list[temp-1] != elem + 1: # list[6] = 1?
+				flag_list[temp-1] = 1
+				temp = work_list[temp-1] # temp = 2
+			flag_list[temp-1] = 1
+			cycle_count += 1
+	return cycle_count
 
 
 skeleton()
