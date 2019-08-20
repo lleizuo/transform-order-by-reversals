@@ -27,7 +27,6 @@ Output will be like:
     	NOP(4) unsatisfiable 1.0366451740264893
 	Optimal solution : [(2, 6, 2), (2, 10, 4), (4, 9, 1), (6, 7, 3)]
 	-----------------------------------------------------------
---
 `src/do_signed.py` takes a signed list as input and gives details about sat solving, similarly. For example,
 
 	python3 do_signed.py 5 -7 4 -1 6 2 -3
@@ -51,7 +50,6 @@ Output will be like:
     	NOP(7) unsatisfiable 24.897839784622192
 	Optimal solution : [(1, 2, 2), (1, 6, 6), (2, 5, 4), (2, 6, 5), (3, 4, 3), (3, 5, 7), (3, 7, 1)]
 	-----------------------------------------------------------
---
 `src/stats2_unsigned.py` generates random unsigned lists, then solve them and put the statistics in an csv file. The number and length of list is based on the input. Usage: 
 
 	python3 stats2_unsigned.py [length_of_list] [number_of_list]
@@ -62,7 +60,6 @@ For exmaple,
 	
 It generates 10 lists with 7 numbers. Then the stats will be in `../data2/p_unsigned_7_10.csv`. `p` means that it uses `plingeling` instead of `lingeling`. 
 
---	
 	
 `src/stats2_signed.py` generates random signed lists, similarly, then solve them and put the statistics in an csv file. The number and length of list is based on the input. Usage: 
 
@@ -74,9 +71,20 @@ For exmaple,
 	
 It generates 10 lists with 7 numbers. Then the stats will be in `../data2/p_signed_8_10.csv`. `p` means that it uses `plingeling` instead of `lingeling`. 
 
---
 
-`cmp_src/sat_vs_ilp.py`
+`cmp_src/sat_vs_ilp.py` takes the stats of SAT solver as input and run gurobi (integer linear programming, ilp) on the corresponding list. The comparison result is put in `cmp_data`. Usage:
+
+	python3 sat_vs_ilp.py [version] [length_of_list] [number of list]
+
+For example, 
+
+	python3 sat_vs_ilp.py unsigned 8 10
+
+It takes `/data2/p_unsigned_8_10.csv` as input. Then the output will be in `cmp_data/p_cmp_8_10.csv`. 
+	
+	
+
+whrgrew
 
 
 	
