@@ -14,17 +14,19 @@ def skeleton():
 	parse_result = [int(num) for num in decode_result[:flagpos].split()]
 	detaildict = ast.literal_eval(decode_result[flagpos+9:flagpos2])
 	detailoper = ast.literal_eval(decode_result[flagpos2+9:])
+	print("-----------------------------------------------------------")
 	print("List : "+str(raw_list))
 	print("Elapsed time : "+str(end_time-start_time))
 	print("Number of clauses : "+str(parse_result[0]))
 	print("Number of operations : "+str(parse_result[1]))
+	print("Number of cycles : "+str(find_cycle(raw_list)))
 	print("Running time of SAT instances : ")
-	print("Number of cycles : "+find_cycle(raw_list))
 	for elem in detaildict:
 		print("    NOP("+str(elem)+") "+str(TFtoSAT(detaildict[elem][0]))+" "+str(detaildict[elem][1]))
 	if len(detailoper) > 0:
 		optimal_solution = detailoper[min(detailoper)]
 		print("Optimal solution : "+str(optimal_solution))
+	print("-----------------------------------------------------------")
 
 
 def TFtoSAT(truefalse):
@@ -36,7 +38,7 @@ def TFtoSAT(truefalse):
 
 def find_cycle(raw_list):
 	n = len(raw_list)
-	work_list = [abs(elem) for elem in raw_list]
+	work_list = [abs(int(elem)) for elem in raw_list]
 	flag_list = [0 for elem in raw_list]
 	cycle_count = 0
 	for elem in range(n):

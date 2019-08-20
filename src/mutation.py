@@ -38,7 +38,7 @@ def skeleton():
 	num_of_lines += f6(start_perm,end_perm,cnf_path)
 	print(num_of_lines,end=" ")
 	header(start_perm,end_perm,cnf_path,num_of_lines+1)
-	nop_k(2,n,cnf_path)
+	#nop_k(2,n,cnf_path)
 
 
 
