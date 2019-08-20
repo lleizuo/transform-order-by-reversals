@@ -9,6 +9,8 @@ The SAT solver can be found [here](https://github.com/arminbiere/lingeling). `li
 ## Running the scirpts
 *Python Version == 3.7.3*  
 
+## Unsigned version
+
 `src/do_unsigned.py` takes an unsigned list as input and gives details about sat solving. Note that it uses `../sat_solver/plingeling` as the relative path. Taking the Cabbage data as an example,
 	
 	python3 do_unsigned.py 1 10 4 5 2 6 3 9 8 7
@@ -27,6 +29,9 @@ Output will be like:
     	NOP(4) unsatisfiable 1.0366451740264893
 	Optimal solution : [(2, 6, 2), (2, 10, 4), (4, 9, 1), (6, 7, 3)]
 	-----------------------------------------------------------
+
+## Signed version	
+
 `src/do_signed.py` takes a signed list as input and gives details about sat solving, similarly. For example,
 
 	python3 do_signed.py 5 -7 4 -1 6 2 -3
@@ -50,6 +55,9 @@ Output will be like:
     	NOP(7) unsatisfiable 24.897839784622192
 	Optimal solution : [(1, 2, 2), (1, 6, 6), (2, 5, 4), (2, 6, 5), (3, 4, 3), (3, 5, 7), (3, 7, 1)]
 	-----------------------------------------------------------
+	
+## Stats of unsigned version	
+	
 `src/stats2_unsigned.py` generates random unsigned lists, then solve them and put the statistics in an csv file. The number and length of list is based on the input. Usage: 
 
 	python3 stats2_unsigned.py [length_of_list] [number_of_list]
