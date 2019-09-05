@@ -93,7 +93,9 @@ For example,
 It takes `/data2/p_unsigned_8_10.csv` as input. Then the output will be in `cmp_data/p_cmp_8_10.csv`. 
 
 ## Plotting the stats
-`/src/plot.ipynb`
+`/src/plot.ipynb`  
+For signed version, the ilp takes much more time.
+For unsigned version, as the cycle increases, while the sat solver time is stable, the ilp time converges to it.
 
 ## Extension 
 TODO
