@@ -3,6 +3,7 @@ import subprocess
 import itertools
 import math
 import time
+import os
 
 sat_instances = {}
 operation_lists = {}
@@ -31,15 +32,19 @@ def skeleton():
     cnf_file = open(cnf_path,'x')
     cnf_file.close()
     num_of_lines = 0
-    num_of_lines += f1(dest_list,cnf_path)
-    num_of_lines += f2(dest_list,cnf_path)
-    num_of_lines += f3(dest_list,cnf_path)
-    num_of_lines += f4(dest_list,cnf_path)
-    num_of_lines += f5(dest_list,cnf_path)
-    num_of_lines += f6(dest_list,cnf_path)
-    num_of_lines += f7(dest_list,cnf_path)
-    num_of_lines += f8(dest_list,cnf_path)
-    num_of_lines += f9(dest_list,cnf_path)
+    total_clause_length = 0
+    # to be done
+    line1,length1 = f1(dest_list,cnf_path)
+    line2,length2 = f2(dest_list,cnf_path)
+    line3,length3 = f3(dest_list,cnf_path)
+    line4,length4 = f4(dest_list,cnf_path)
+    line5,length5 = f5(dest_list,cnf_path)
+    line6,length6 = f6(dest_list,cnf_path)
+    line7,length7 = f7(dest_list,cnf_path)
+    line8,length8 = f8(dest_list,cnf_path)
+    line9,length9 = f9(dest_list,cnf_path)
+    num_of_lines = line1 + line2 + line3 + line4 + line5 + line6 + line7 + line8 + line9
+    total_clause_length = length1 + length2 + length3 + length4 + length5 + length6 + length7 + length8 + length9
     print(num_of_lines,end=" ")
     header(dest_list,cnf_path,num_of_lines + 1)
     # if nop_k(1,dest_list,cnf_path):
@@ -73,7 +78,11 @@ def skeleton():
                     k = search_k(math.ceil(breakpoints/2)-1,min(breakpoints,n-1),dest_list,cnf_path)
                     nop_k(k+1,dest_list,cnf_path)
                     print(k,end=" ")
+    filesize = os.path.getsize(cnf_path)
     subprocess.run(["rm","temp.cnf"])
+    print(variable_count(n),end=" ") # requirement 1 : number of variables
+    print(total_clause_length,end=" ") # requirement 2 : total length of clause
+    print(filesize,end=" ") # requirement 3 : cnf formula size in bytes
     print("dictflag",end=" ")
     print(sat_instances,end=" ")
     print("operflag",end=" ")
@@ -82,6 +91,11 @@ def skeleton():
 
 def header(dest_list,cnf_path,num_of_clauses):
     n = len(dest_list)
+    num_of_vars = variable_count(n)
+    line_prepender(cnf_path,"p cnf "+str(num_of_vars)+" "+str(num_of_clauses))
+
+
+def variable_count(n):
     num_of_vars = 0
     # X[k : 1 to n-1][i : 1 to n][p : 1 to n][q : 1 to n]
     num_of_vars += pow(n,4)-pow(n,3)
@@ -89,7 +103,7 @@ def header(dest_list,cnf_path,num_of_clauses):
     num_of_vars += pow(n,3)-pow(n,2)
     # NOP : 1 to n-1
     num_of_vars += n - 1
-    line_prepender(cnf_path,"p cnf "+str(num_of_vars)+" "+str(num_of_clauses))
+    return num_of_vars
 
 
 def line_prepender(cnf_path, line):
@@ -117,6 +131,7 @@ def f1(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f1_line\n")
     clause_count = 0
+    clause_length = 0
     for k in range(1,n):
         var_list = []
         var_list.append(nop_index(k,n))
@@ -126,14 +141,16 @@ def f1(dest_list,cnf_path):
         # all items in the first line
         for elem in var_list:
             cnf_file.write(str(elem)+" ")
+            clause_length += 1
         cnf_file.write("0\n")
         clause_count += 1
         # all pairs of neg elem
         for pair in itertools.combinations(var_list,2):
             cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+            clause_length += 2
             clause_count += 1
     cnf_file.close()
-    return clause_count
+    return (clause_count,clause_length)
 
 
 def f2(dest_list,cnf_path):
@@ -141,6 +158,7 @@ def f2(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f2_line\n")
     clause_count = 0
+    clause_length = 0
     for i in range(1,n+1):
         var_list = []
         for q in range(1,n+1):
@@ -148,14 +166,16 @@ def f2(dest_list,cnf_path):
         # all items in the first line
         for elem in var_list:
             cnf_file.write(str(elem)+" ")
+            clause_length += 1
         cnf_file.write("0\n")
         clause_count += 1
         # all pairs of neg elem
         for pair in itertools.combinations(var_list,2):
             cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+            clause_length += 2
             clause_count += 1
     cnf_file.close()
-    return clause_count
+    return (clause_count,clause_length)
 
 
 def f3(dest_list,cnf_path):
@@ -163,6 +183,7 @@ def f3(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f3_line\n")
     clause_count = 0
+    clause_length = 0
     for i in range(1,n+1):
         var_list = []
         for p in range(1,n+1):
@@ -170,14 +191,16 @@ def f3(dest_list,cnf_path):
         # all items in the first line
         for elem in var_list:
             cnf_file.write(str(elem)+" ")
+            clause_length += 1
         cnf_file.write("0\n")
         clause_count += 1
         # all pairs of neg elem
         for pair in itertools.combinations(var_list,2):
             cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+            clause_length += 2
             clause_count += 1
     cnf_file.close()
-    return clause_count
+    return (clause_count,clause_length)
 
 
 def f4(dest_list,cnf_path):
@@ -185,6 +208,7 @@ def f4(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f4_line\n")
     clause_count = 0
+    clause_length = 0 
     for k in range(2,n):
         for q in range(1,n+1):
             var_list = []
@@ -194,14 +218,16 @@ def f4(dest_list,cnf_path):
             # all items in the first line
             for elem in var_list:
                 cnf_file.write(str(elem)+" ")
+                clause_length += 1
             cnf_file.write("0\n")
             clause_count += 1
             # all pairs of neg elem
             for pair in itertools.combinations(var_list,2):
                 cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+                clause_length += 2
                 clause_count += 1
     cnf_file.close()
-    return clause_count
+    return (clause_count,clause_length)
 
 
 def f5(dest_list,cnf_path):
@@ -209,6 +235,7 @@ def f5(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f5_line\n")
     clause_count = 0
+    clause_length = 0
     for k in range(2,n):
         for p in range(1,n+1):
             var_list = []
@@ -218,14 +245,16 @@ def f5(dest_list,cnf_path):
             # all items in the first line
             for elem in var_list:
                 cnf_file.write(str(elem)+" ")
+                clause_length += 1
             cnf_file.write("0\n")
             clause_count += 1
             # all pairs of neg elem
             for pair in itertools.combinations(var_list,2):
                 cnf_file.write("-"+str(pair[0])+" -"+str(pair[1])+" 0\n")
+                clause_length += 2
                 clause_count += 1
     cnf_file.close()
-    return clause_count
+    return (clause_count,clause_length)
 
 
 def f6(dest_list,cnf_path):
@@ -233,6 +262,7 @@ def f6(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f6_line\n")
     clause_count = 0
+    clause_length = 0 
     for k in range(2,n):
         for i in range(1,n+1):
             for p in range(1,n+1):
@@ -243,20 +273,26 @@ def f6(dest_list,cnf_path):
                     var_list_2.append(x_index(k,i,p,q,n))
                 # first part
                 first_string = ""
+                first_count = 0
                 for var in var_list_1:
                     first_string += str(var) + " "
+                    first_count += 1
                 for var in var_list_2:
                     cnf_file.write(first_string+" -"+str(var)+" 0\n")
                     clause_count += 1
+                    clause_length += (first_count + 1)
                 # second part
                 second_string = ""
+                second_count = 0 
                 for var in var_list_2:
                     second_string += str(var) + " "
+                    second_count += 1
                 for var in var_list_1:
                     cnf_file.write(second_string+" -"+str(var)+" 0\n")
                     clause_count += 1
+                    clause_length += (second_count + 1)
     cnf_file.close()
-    return clause_count
+    return (clause_count,clause_length)
 
 
 def f7(dest_list,cnf_path):
@@ -264,6 +300,7 @@ def f7(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f7_line\n")
     clause_count = 0
+    clause_length = 0
     for k in range(1,n):
         for w in range(1,n+1):
             var_list_1 = []
@@ -280,13 +317,16 @@ def f7(dest_list,cnf_path):
                     if p > w and q > w:
                         var_list_2.append(r_index(p,q,k,n))
             second_string = ""
+            second_count = 0
             for var in var_list_2:
                 second_string += str(var) + " "
+                second_count += 1
             for var in var_list_1:
                 cnf_file.write(second_string+"-"+str(var)+" 0\n")
                 clause_count += 1
+                clause_length += (second_count + 1)
     cnf_file.close()
-    return clause_count
+    return (clause_count,clause_length)
 
 
 def f8(dest_list,cnf_path):
@@ -294,6 +334,7 @@ def f8(dest_list,cnf_path):
     cnf_file = open(cnf_path,'a')
     #cnf_file.write("f8_line\n")
     clause_count = 0
+    clause_length = 0
     for k in range(1,n):
         for w in range(1,n+1):
             for z in range(1,n+1):
@@ -314,13 +355,16 @@ def f8(dest_list,cnf_path):
                 #         if a-p == q-b and a-p <= min(a-1,n-b):
                 #             var_list_2.append(r_index(p,q,k,n))
                 second_string = ""
+                second_count = 0
                 for var in var_list_2:
                     second_string += str(var) + " "
+                    second_count += 1
                 for var in var_list_1:
                     cnf_file.write(second_string+"-"+str(var)+" 0\n")
                     clause_count += 1
+                    clause_length += (second_count + 1)
     cnf_file.close()
-    return clause_count
+    return (clause_count,clause_length)
 
 
 def f9(dest_list,cnf_path):
@@ -330,7 +374,7 @@ def f9(dest_list,cnf_path):
     for k in range(1,n-1):
         cnf_file.write(str(nop_index(k+1,n))+" -"+str(nop_index(k,n))+" 0\n")
     cnf_file.close()
-    return n-2
+    return (n-2,2*n-4)
 
 
 def search_k(start,end,dest_list,cnf_path):

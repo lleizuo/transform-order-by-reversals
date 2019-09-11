@@ -19,6 +19,9 @@ def skeleton():
 	print("Elapsed time : "+str(end_time-start_time))
 	print("Number of clauses : "+str(parse_result[0]))
 	print("Number of operations : "+str(parse_result[1]))
+	print("Number of variables : "+str(parse_result[2]))
+	print("Total length of clauses : "+str(parse_result[3]))
+	print("Memory used in CNF formula (bytes) : "+str(parse_result[4]))
 	print("Number of cycles : "+str(find_cycle(raw_list)))
 	print("Running time of SAT instances : ")
 	for elem in detaildict:
