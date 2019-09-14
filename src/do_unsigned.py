@@ -24,19 +24,39 @@ def skeleton():
 	print("Memory used in CNF formula (bytes) : "+str(parse_result[4]))
 	print("Number of cycles : "+str(find_cycle(raw_list)))
 	print("Running time of SAT instances : ")
+	orderdict = []
 	for elem in detaildict:
+		orderdict.append(elem)
+	orderdict.sort()
+	for elem in orderdict:
 		print("    NOP("+str(elem)+") "+str(TFtoSAT(detaildict[elem][0]))+" "+str(detaildict[elem][1]))
 	if len(detailoper) > 0:
 		optimal_solution = detailoper[min(detailoper)]
-		print("Optimal solution : "+str(optimal_solution))
+		print("Optimal solution : ")
+		steps = len(optimal_solution)
+		work_list = list(range(1,len(raw_list)+1))
+		for i in range(0,steps):
+			for j in range(0,steps):
+				if optimal_solution[j][2] == i+1:
+					print("    ",end="")
+					print(i+1,end=":  R")
+					print(optimal_solution[j],end="  ")
+					temp_list = work_list.copy()
+					p = optimal_solution[j][0]
+					q = optimal_solution[j][1]
+					for k in range(p-1,q):
+						temp_list[k] = work_list[p+q-2-k]
+					work_list = temp_list
+					print(work_list)
+		#print("Optimal solution : "+str(optimal_solution))
 	print("-----------------------------------------------------------")
 
 
 def TFtoSAT(truefalse):
 	if truefalse:
-		return "satisfiable"
+		return "  satisfiable   "
 	else:
-		return "unsatisfiable"
+		return "  unsatisfiable "
 
 
 def find_cycle(raw_list):
